@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:todo_list/helper/database_helper.dart';
 import 'package:todo_list/screens/home.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Khởi tạo cơ sở dữ liệu
+  await DatabaseHelper().database;
   runApp(const MyApp());
 }
 

@@ -1,9 +1,22 @@
 class Todo {
   int? id;
   late String title;
-  String? timeDate;
+  String content;
   bool?  isDone;
-  bool? isNotify;
 
-  Todo(this.id, this.title, this.timeDate, this.isDone, this.isNotify);
+  Todo(this.id, this.title, this.content, this.isDone);
+
+  Map<String, Object?> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'content':content,
+      'isDone': isDone,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'Todo{id: $id, title: $title, content: $content, isDone: $isDone}';
+  }
 }

@@ -1,8 +1,14 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_list/constants/colors.dart';
 import 'package:todo_list/model/Todo.dart';
+import 'package:todo_list/widgets/create.dart';
 import 'package:todo_list/widgets/todo_items.dart';
+
+import '../helper/database_helper.dart';
+
 
 class Home extends StatefulWidget {
 
@@ -13,22 +19,21 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<Todo> todoList = [
-    Todo(1, "Morning Excercise", "2024", true, true),
-    Todo(1, "Morning Excercise", "2024", true, true),
-    Todo(1, "Check Emails", '123', true, true),
-    Todo(1, "Work on mobile apps for 2 hour'", "2024", true, true),
-    Todo(1, "Dinner with Jenny", "2024", true, true),
-    Todo(1, "Check Emails", '123', true, true),
-    Todo(1, "Work on mobile apps for 2 hour'", "2024", true, true),
-    Todo(1, "Dinner with Jenny", "2024", true, true),
-    Todo(1, "Check Emails", '123', true, true),
-    Todo(1, "Work on mobile apps for 2 hour'", "2024", true, true),
-    Todo(1, "Dinner with Jenny", "2024", true, true),
-    Todo(1, "Check Emails", '123', true, true),
-    Todo(1, "Work on mobile apps for 2 hour'", "2024", true, true),
-    Todo(1, "Dinner with Jenny", "2024", true, true),
-  ];
+  final DatabaseHelper _dbHelper = DatabaseHelper();
+  List<Todo> _todos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTodos();
+  }
+
+  void _loadTodos() async {
+    List<Todo> todos = await _dbHelper.getTodos();
+    setState(() {
+      _todos = todos;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +61,7 @@ class _HomeState extends State<Home> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                              Text(
-                              'To-do list',
+                              'To-do',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w500,
@@ -69,7 +74,7 @@ class _HomeState extends State<Home> {
                           ],
                         ),
                       ),
-                      for(Todo todo in todoList)
+                      for(Todo todo in _todos)
                         TodoItem(todo: todo)
                     ],
                   ),
@@ -79,9 +84,15 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
+      // Button create
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-
+          showDialog(
+              context: context,
+              builder: (_) {
+                return CreateTodo();
+              },
+            );
         },
         tooltip: 'Increment Counter',
         child: const Icon(Icons.add),
