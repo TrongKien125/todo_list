@@ -1,33 +1,30 @@
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 import 'package:todo_list/model/Todo.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TodoRepository {
-  Database? _database;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // init database
-  Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDatabase();
-    return _database!;
+  Future<void> addToDoItem(ToDo todo) async {
+    await _firestore.collection('todo_items').add({
+      'todoText': todo.todoText,
+      'isDone': todo.isDone,
+      'dateTime': todo.dateTime,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
   }
 
-  Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'todo_database.db');
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _onCreate,
-    );
+  Stream<QuerySnapshot> getToDoItems() {
+    return _firestore.collection('todo_items').orderBy('createdAt').snapshots();
   }
 
-  Future _onCreate(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE todos(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        task TEXT,
-        isCompleted INTEGER
-      )
-    ''');
+  Future<void> deleteToDoItem(String documentId) async {
+    await _firestore.collection('todo_items').doc(documentId).delete();
+  }
+
+  Future<void> updateToDoItem(String documentId, String newTitle, String newDescription) async {
+    await _firestore.collection('todo_items').doc(documentId).update({
+      'title': newTitle,
+      'description': newDescription,
+    });
   }
 }
