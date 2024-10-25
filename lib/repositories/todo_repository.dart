@@ -6,6 +6,7 @@ class TodoRepository {
 
   Future<void> addToDoItem(ToDo todo) async {
     await _firestore.collection('todo_items').add({
+      'id': todo.id,
       'todoText': todo.todoText,
       'isDone': todo.isDone,
       'dateTime': todo.dateTime,
@@ -13,8 +14,15 @@ class TodoRepository {
     });
   }
 
-  Stream<QuerySnapshot> getToDoItems() {
-    return _firestore.collection('todo_items').orderBy('createdAt').snapshots();
+  Stream<List<ToDo>> getToDoItems() {
+    return _firestore.collection('todo_items')
+        .orderBy('createdAt')
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return ToDo.fromMap(doc.data() as Map<String, dynamic>);
+      }).toList();
+    });
   }
 
   Future<void> deleteToDoItem(String documentId) async {

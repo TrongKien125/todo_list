@@ -11,6 +11,15 @@ class ToDo {
     this.dateTime,
   });
 
+  factory ToDo.fromMap(Map<String, dynamic> data) {
+    return ToDo(
+      id: data['todoText'] ?? '1',
+      todoText: data['todoText'] ?? '',
+      isDone: data['isDone'] ?? false,
+      dateTime: data['dateTime'] ?? '',
+    );
+  }
+
   static List<ToDo> todoList() {
     return [
       ToDo(id: '01', todoText: 'Morning Excercise', isDone: true ),
@@ -21,4 +30,5 @@ class ToDo {
       ToDo(id: '06', todoText: 'Dinner with Jenny', ),
     ];
   }
+
 }

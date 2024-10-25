@@ -2,10 +2,16 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_list/blocs/todo_bloc.dart';
+import 'package:todo_list/blocs/todo_event.dart';
+import 'package:todo_list/blocs/todo_state.dart';
 import 'package:todo_list/constants/colors.dart';
 import 'package:todo_list/model/Todo.dart';
+import 'package:todo_list/repositories/todo_repository.dart';
 import 'package:todo_list/widgets/todo_items.dart';
 import 'package:date_time_picker/date_time_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
@@ -19,6 +25,7 @@ class _HomeState extends State<Home> {
   List<ToDo> _foundToDo = [];
   final _todoController = TextEditingController();
   final _todoDate = TextEditingController();
+  TodoRepository todoRepository = TodoRepository();
 
   @override
   void initState() {
@@ -31,88 +38,111 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: tdBGColor,
       // appBar: _buildAppBar(),
-      body: Stack(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 15,
-            ),
-            child: Column(
-              children: [
-                searchBox(),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Todos',
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
+      body: BlocBuilder<TodoBloc, TodoState>(
+        builder: (context, state) {
+          if (state is TodoLoading) {
+            return Center(child: CircularProgressIndicator());
+          } else if (state is TodoError) {
+            return Center(child: Text('Error: ${state.message}'));
+          } else if (state is TodoLoaded) {
+            final todoList = state.todos;
+            if (todoList.length == 0) {
+              return Center(
+                child: Text('No data'),
+              );
+            }
+            return StreamBuilder<List<ToDo>>(
+              stream: todoList,
+              builder: (context, snapshot) {
+                List<ToDo> toDoItems = snapshot.data!;
+                return Stack(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 15,
                       ),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: _foundToDo.length,
-                          itemBuilder: (context, index) {
-                            return Dismissible(
-                              key: Key(_foundToDo[index].id),
-                              direction: DismissDirection.endToStart,
-                              onDismissed: (direction) {
-                                setState(() {
-                                  _deleteToDoItem(_foundToDo[index].id);
-                                });
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('ToDo item đã bị xóa')),
-                                );
-                              },
-                              background: Container(
-                                margin: EdgeInsets.only(bottom: 20),
-                                decoration: BoxDecoration(
-                                  color: Colors.red, // Màu nền khi vuốt
-                                  borderRadius: BorderRadius.circular(15), // Bo tròn góc
+                      child: Column(
+                        children: [
+                          searchBox(),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Container(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Todos',
+                                        style: TextStyle(
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                padding: EdgeInsets.only(right: 20),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text('Delete ', style: TextStyle(color: Colors.white)),
-                                    Icon(Icons.delete, color: Colors.white),
-                                  ],
-                                ), // Biểu tượng xóa
-                              ),
-                              child: InkWell(
-                                onLongPress: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (_) {
-                                      return CreateTodo(_foundToDo[index]);
-                                    },
-                                  );
-                                },
-                            child: ToDoItem(
-                              todo: _foundToDo[index],
-                              onToDoChanged: _handleToDoChange,
-                              onDeleteItem: _deleteToDoItem),
-                              ),
-                            );
-                          }
-                        ),
+                                Expanded(
+                                  child: ListView.builder(
+                                      itemCount: toDoItems.length,
+                                      itemBuilder: (context, index) {
+                                        return Dismissible(
+                                          key: Key(_foundToDo[index].id),
+                                          direction: DismissDirection.endToStart,
+                                          onDismissed: (direction) {
+                                            setState(() {
+                                              _deleteToDoItem(_foundToDo[index].id);
+                                            });
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('ToDo item đã bị xóa')),
+                                            );
+                                          },
+                                          background: Container(
+                                            margin: EdgeInsets.only(bottom: 20),
+                                            decoration: BoxDecoration(
+                                              color: Colors.red, // Màu nền khi vuốt
+                                              borderRadius: BorderRadius.circular(15), // Bo tròn góc
+                                            ),
+                                            padding: EdgeInsets.only(right: 20),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.end,
+                                              children: [
+                                                Text('Delete ', style: TextStyle(color: Colors.white)),
+                                                Icon(Icons.delete, color: Colors.white),
+                                              ],
+                                            ), // Biểu tượng xóa
+                                          ),
+                                          child: InkWell(
+                                            onLongPress: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) {
+                                                  return CreateTodo(_foundToDo[index]);
+                                                },
+                                              );
+                                            },
+                                            child: ToDoItem(
+                                                todo: toDoItems[index],
+                                                onToDoChanged: _handleToDoChange,
+                                                onDeleteItem: _deleteToDoItem),
+                                          ),
+                                        );
+                                      }
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
                       ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        ],
+                    ),
+                  ],
+                );
+              }
+            );
+          }
+          return Container();
+        }
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

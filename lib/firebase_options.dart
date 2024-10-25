@@ -42,7 +42,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyCmiBJAwP9mjSB52hhshshAejdzu-FDjRs',
-    appId: '1:1023293077169:web:4f02eb16101e3ed9799490',
+    appId: '1:1023293077169:web:936e99e415509701799490',
     messagingSenderId: '1023293077169',
     projectId: 'todo-list-da05a',
     authDomain: 'todo-list-da05a.firebaseapp.com',
@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDqA-uNs7CbhYV2oL_fN15LHvZVtObjXT0',
-    appId: '1:1023293077169:android:b371ffffb64b783b799490',
+    appId: '1:1023293077169:android:da5bca2f6e27271e799490',
     messagingSenderId: '1023293077169',
     projectId: 'todo-list-da05a',
     storageBucket: 'todo-list-da05a.appspot.com',
@@ -59,7 +59,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDi08DjA-tFLceW0j2w7Tc8jW58kN_Clt0',
-    appId: '1:1023293077169:ios:aa246bc0fcf4fdec799490',
+    appId: '1:1023293077169:ios:2a1158178b4d5449799490',
     messagingSenderId: '1023293077169',
     projectId: 'todo-list-da05a',
     storageBucket: 'todo-list-da05a.appspot.com',
@@ -68,7 +68,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDi08DjA-tFLceW0j2w7Tc8jW58kN_Clt0',
-    appId: '1:1023293077169:ios:aa246bc0fcf4fdec799490',
+    appId: '1:1023293077169:ios:2a1158178b4d5449799490',
     messagingSenderId: '1023293077169',
     projectId: 'todo-list-da05a',
     storageBucket: 'todo-list-da05a.appspot.com',
@@ -77,10 +77,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyCmiBJAwP9mjSB52hhshshAejdzu-FDjRs',
-    appId: '1:1023293077169:web:8ca190596607ec8f799490',
+    appId: '1:1023293077169:web:73f5d8e63c1c9cc7799490',
     messagingSenderId: '1023293077169',
     projectId: 'todo-list-da05a',
     authDomain: 'todo-list-da05a.firebaseapp.com',
     storageBucket: 'todo-list-da05a.appspot.com',
   );
+
 }

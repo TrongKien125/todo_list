@@ -4,9 +4,9 @@ abstract class TodoEvent {}
 
 class ListTodos extends TodoEvent {}
 
-class CreateTodo extends TodoEvent {
+class AddTodo extends TodoEvent {
   final ToDo todo;
-  CreateTodo(this.todo);
+  AddTodo(this.todo);
 }
 
 class EditTodo extends TodoEvent {
